@@ -26,12 +26,12 @@
         </div>
         <div class="row row-height">
           <div class="col-height col-md-4">
-            <label for="effectdate">{{ labels.effectdate_label }}:</label>
+            <label for="effectdate">{{ labels.effectdate_label }}</label>
             <InputDate ref="effectdate" v-model="localData.effectdate" id="effectdate" name="effectdate" /> 
             <span v-if="v$.effectdate.$error" class="has-error">{{ v$.effectdate.$errors[0].$message }}</span>
           </div>
           <div class="col-height col-md-3">
-            <label for="edittime">{{labels.effecttime_label}}:</label>
+            <label for="edittime">{{labels.effecttime_label}}</label>
             <InputTime ref="effecttime" v-model="localData.effecttime" id="effecttime" name="effecttime" /> 
             <span v-if="v$.effecttime.$error" class="has-error">{{ v$.effecttime.$errors[0].$message }}</span>
           </div>
