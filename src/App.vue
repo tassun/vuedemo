@@ -2,15 +2,15 @@
 <template>
   <div id="fswaitlayer"><img id="waitImage" class="waitimgclass" src="img/waiting.gif" width="50px" height="50px" alt="" /></div>
   <div class="pt-page pt-page-current pt-page-controller search-pager">
-    <PageHeader ref="pageHeader" :labels="label" pid="demo002">
-      <li><a href="javascript:void(0)" @click="changeLanguage('EN')" class="pagemenu-linker"><img src="img/lang/EN.png" alt="EN" class="img-lang" />&nbsp;{{ label.english_lang }}</a></li>
-      <li><a href="javascript:void(0)" @click="changeLanguage('TH')" class="pagemenu-linker"><img src="img/lang/TH.png" alt="TH" class="img-lang" />&nbsp;{{ label.thai_lang }}</a></li>
+    <PageHeader ref="pageHeader" :labels="labels" pid="demo002" version="1.0.0">
+      <li><a href="javascript:void(0)" @click="changeLanguage('EN')" class="pagemenu-linker"><img src="img/lang/EN.png" alt="EN" class="img-lang" />&nbsp;{{ labels.english_lang }}</a></li>
+      <li><a href="javascript:void(0)" @click="changeLanguage('TH')" class="pagemenu-linker"><img src="img/lang/TH.png" alt="TH" class="img-lang" />&nbsp;{{ labels.thai_lang }}</a></li>
       <hr class="menu-separator"/>
     </PageHeader>
-    <SearchForm ref="searchForm" :labels="label" :dataCategory="dataCategory" @data-select="dataSelected" @data-insert="dataInsert"/>
+    <SearchForm ref="searchForm" :labels="labels" :dataCategory="dataCategory" @data-select="dataSelected" @data-insert="dataInsert"/>
   </div>
   <teleport to="#modaldialog">
-    <EntryForm ref="entryForm" :labels="label" :dataCategory="dataCategory" @data-saved="dataSaved" @data-updated="dataUpdated" @data-deleted="dataDeleted" />
+    <EntryForm ref="entryForm" :labels="labels" :dataCategory="dataCategory" @data-saved="dataSaved" @data-updated="dataUpdated" @data-deleted="dataDeleted" />
   </teleport>
 </template>
 <script>
@@ -31,23 +31,20 @@ export default {
       licenses: [{key: "CAR", text: "Car"},{key: "TRUCK", text: "Truck"},{key: "BOAT", text: "Boat"}],
       languages: [{key: "TH", text: "Thai"},{key: "EN", text: "English"},{key: "CN", text: "Chinese"},{key: "KR", text: "Korea"},{key: "JP", text: "Japan"}]
     };
-    let label = ref(getLabelModel());
-    return { label, dataCategory };
+    let labels = ref(getLabelModel());
+    return { labels, dataCategory };
   },
   mounted() {
     console.log("App: mounted ...");
     this.$nextTick(function () {
       //ensure ui completed then invoke startApplication 
-      startApplication();
+      startApplication("demo002");
     });
   },
   methods: {
     changeLanguage(lang) {
       let labelModel = getLabelModel(lang);
-      this.label = labelModel;
-      this.$refs.pageHeader.setLabel(labelModel);
-      this.$refs.searchForm.setLabel(labelModel);
-      this.$refs.entryForm.setLabel(labelModel);
+      this.labels = labelModel;
     },
     dataSelected(item,action) {
       //listen action from search form

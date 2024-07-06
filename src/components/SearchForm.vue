@@ -2,25 +2,25 @@
 <div id="searchpanel" class="panel-body search-panel">
     <div class="row row-height">
         <div class="col-height col-md-3">
-            <label for="account">{{ label.account_label }}</label>
+            <label for="account">{{ labels.account_label }}</label>
             <InputMask v-model="localData.account" picture="XXXXXXXXXXXX" /> 
         </div>
         <div class="col-height col-md-3">
-            <label for="effectdate">{{ label.effectdate_label }}</label>
+            <label for="effectdate">{{ labels.effectdate_label }}</label>
             <InputDate v-model="localData.effectdate" /> 
         </div>
         <div class="col-height col-md-3">
-            <label>{{ label.marrystatus_label }}</label>
+            <label>{{ labels.marrystatus_label }}</label>
             <Select2 v-model="localData.marrystatus" :options="statusOptions" :settings="{multiple: true}" />
         </div>
         <div class="col-height col-md">
             <br/>
-            <button @click="searchClick" class="btn btn-dark btn-sm btn-ctrl"><i class="fa fa-search fa-btn-icon" aria-hidden="true"></i>{{ label.search_button }}</button>
-            <button @click="insertClick" class="btn btn-dark btn-sm btn-ctrl pull-right"><i class="fa fa-plus fa-btn-icon" aria-hidden="true"></i>{{ label.insert_button }}</button>
+            <button @click="searchClick" class="btn btn-dark btn-sm btn-ctrl"><i class="fa fa-search fa-btn-icon" aria-hidden="true"></i>{{ labels.search_button }}</button>
+            <button @click="insertClick" class="btn btn-dark btn-sm btn-ctrl pull-right"><i class="fa fa-plus fa-btn-icon" aria-hidden="true"></i>{{ labels.insert_button }}</button>
         </div>
     </div>
     <div id="listpanel" class="table-responsive fa-list-panel">
-        <DataTable ref="dataTable" :settings="tableSettings" :labels="label" :dataset="dataset" @data-select="dataSelected" @data-sort="dataSorted" :formater="formatData" />
+        <DataTable ref="dataTable" :settings="tableSettings" :labels="labels" :dataset="dataset" @data-select="dataSelected" @data-sort="dataSorted" :formater="formatData" />
         <DataPaging ref="dataPaging" :settings="pagingSettings" @page-select="pageSelected" />
     </div>
 </div>
@@ -70,22 +70,17 @@ export default {
   },
   emits: ["data-select","data-insert"],
   setup(props) {
-    const label = ref({...props.labels});
     const localData = ref({ ...defaultData, ...props.formData });
     const localCategory = ref({...props.dataCategory});
     let paging = new Paging();
     let pagingSettings = paging.setting;
     let filters = {};
     const statusOptions = props.dataCategory.marrystatus.map((item) => { return {id: item.key, text: item.text}});
-    return { label, localData, localCategory, tableSettings, pagingSettings, paging, filters, statusOptions };
+    return { localData, localCategory, tableSettings, pagingSettings, paging, filters, statusOptions };
   },
   methods: {
     reset(newData) {
       if(newData) this.localData = {...newData};
-    },
-    setLabel(newLabel) {
-      if(newLabel) this.label = {...newLabel};
-      this.$refs.dataTable.setLabel(newLabel);
     },
     getPagingOptions(settings) {
       if(!settings) settings = this.pagingSettings;
@@ -160,10 +155,10 @@ export default {
     formatData(data,field) {
       if(field.name=="gender") {
         if("M"==data) {
-          //return this.label.male_label; //"Male";
+          //return this.labels.male_label; //"Male";
           return '<em class="fa fa-male"></em>';
         } else if("F"==data) {
-          //return this.label.female_label; //"Female";
+          //return this.labels.female_label; //"Female";
           return '<em class="fa fa-female"></em>';
         } else return data;  
       }
