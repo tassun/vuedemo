@@ -1,10 +1,10 @@
 <!-- App.vue -->
 <template>
-  <div id="fswaitlayer"><img id="waitImage" class="waitimgclass" src="img/waiting.gif" width="50px" height="50px" alt="" /></div>
+  <div id="fswaitlayer" class="fa fa-spinner fa-spin"></div>
   <div class="pt-page pt-page-current pt-page-controller search-pager">
     <PageHeader ref="pageHeader" :labels="labels" pid="demo002" version="1.0.0">
-      <li><a href="javascript:void(0)" @click="changeLanguage('EN')" class="pagemenu-linker"><img src="img/lang/EN.png" alt="EN" class="img-lang" />&nbsp;{{ labels.english_lang }}</a></li>
-      <li><a href="javascript:void(0)" @click="changeLanguage('TH')" class="pagemenu-linker"><img src="img/lang/TH.png" alt="TH" class="img-lang" />&nbsp;{{ labels.thai_lang }}</a></li>
+      <li><a href="javascript:void(0)" @click="changeLanguage('EN')" class="pagemenu-linker"><img class="img-lang img-lang-EN" />&nbsp;{{ labels.english_lang }}</a></li>
+      <li><a href="javascript:void(0)" @click="changeLanguage('TH')" class="pagemenu-linker"><img class="img-lang img-lang-TH" />&nbsp;{{ labels.thai_lang }}</a></li>
       <hr class="menu-separator"/>
     </PageHeader>
     <SearchForm ref="searchForm" :labels="labels" :dataCategory="dataCategory" @data-select="dataSelected" @data-insert="dataInsert"/>
