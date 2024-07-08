@@ -120,7 +120,7 @@ import { ref, computed, watch } from 'vue';
 import { useVuelidate } from '@vuelidate/core';
 import { required, helpers, between } from '@vuelidate/validators';
 import $ from "jquery";
-import { DEFAULT_CONTENT_TYPE, API_URL }  from '@/assets/apputil.js';
+import { DEFAULT_CONTENT_TYPE, getApiUrl }  from '@/assets/apputil.js';
 import { startWaiting, stopWaiting, submitFailure, detectErrorResponse }  from '@/assets/apputil.js';
 import { confirmUpdate, confirmSave, confirmDelete, successbox } from '@/assets/apputil.js';
 import { replaceString } from "@/assets/msgutil.js";
@@ -287,7 +287,7 @@ export default {
         Object.assign(jsondata,dataRecord);
         startWaiting();
         $.ajax({
-          url: API_URL+"/api/demo002/insert",
+          url: getApiUrl()+"/api/demo002/insert",
           data: jsondata,
           type: "POST",
           dataType: "json",
@@ -314,7 +314,7 @@ export default {
         Object.assign(jsondata,dataRecord);
         startWaiting();
         $.ajax({
-          url: API_URL+"/api/demo002/update",
+          url: getApiUrl()+"/api/demo002/update",
           data: jsondata,
           type: "POST",
           dataType: "json",
@@ -339,7 +339,7 @@ export default {
       Object.assign(jsondata,dataKeys);
       startWaiting();
       $.ajax({
-        url: API_URL+"/api/demo002/retrieve",
+        url: getApiUrl()+"/api/demo002/retrieve",
         data: jsondata,
         type: "POST",
         dataType: "json",
@@ -365,7 +365,7 @@ export default {
       Object.assign(jsondata,dataKeys);
       startWaiting();
       $.ajax({
-        url: API_URL+"/api/demo002/remove",
+        url: getApiUrl()+"/api/demo002/remove",
         data: jsondata,
         type: "POST",
         dataType: "json",
