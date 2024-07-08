@@ -11,7 +11,7 @@
         </div>
         <div class="col-height col-md-3">
             <label>{{ labels.marrystatus_label }}</label>
-            <Select2 v-model="localData.marrystatus" :options="statusOptions" :settings="{multiple: true}" />
+            <Select2 v-model="localData.marrystatus" :options="dataCategory.marrystatus" :settings="{multiple: true}" />
         </div>
         <div class="col-height col-md">
             <br/>
@@ -71,12 +71,12 @@ export default {
   emits: ["data-select","data-insert"],
   setup(props) {
     const localData = ref({ ...defaultData, ...props.formData });
-    const localCategory = ref({...props.dataCategory});
     let paging = new Paging();
     let pagingSettings = paging.setting;
     let filters = {};
-    const statusOptions = props.dataCategory.marrystatus.map((item) => { return {id: item.key, text: item.text}});
-    return { localData, localCategory, tableSettings, pagingSettings, paging, filters, statusOptions };
+    //select2 data options must in format {id:?, text:?}
+    //const statusOptions = props.dataCategory.marrystatus.map((item) => { return {id: item.key, text: item.text}});
+    return { localData, tableSettings, pagingSettings, paging, filters };
   },
   methods: {
     reset(newData) {

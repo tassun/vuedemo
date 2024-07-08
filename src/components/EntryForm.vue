@@ -96,7 +96,7 @@
           <div class="col-height col-md-3">
             <label>{{ labels.languages_label }}</label>
             <select ref="languages" v-model="localData.languages" class="form-control input-md" multiple>
-              <option v-for="item in localCategory.languages" :key="item.key" :value="item.key">{{item.text}}</option>
+              <option v-for="item in dataCategory.languages" :key="item.key" :value="item.key">{{item.text}}</option>
             </select>
             <span v-if="v$.languages.$error" class="has-error">{{ v$.languages.$errors[0].$message }}</span>
           </div>
@@ -159,7 +159,6 @@ export default {
   setup(props) {
     const mode = ref({action: "new", ...props.modes});
     const localData = ref({ ...defaultData }); 
-    const localCategory = ref({...props.dataCategory});
     const disabledKeyField = ref(false);
     const reqalert = ref(props.labels.empty_alert);
     const agealert = ref(props.labels.age_alert);
@@ -187,7 +186,7 @@ export default {
       } 
     });
     const v$ = useVuelidate(validateRules, localData, { $lazy: true, $autoDirty: true });
-    return { mode, v$, localData, localCategory, disabledKeyField, reqalert, agealert };
+    return { mode, v$, localData, disabledKeyField, reqalert, agealert };
   },
   created() {
     watch(this.$props, (newProps) => {      

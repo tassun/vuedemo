@@ -15,36 +15,81 @@
 </template>
 <script>
 import { ref } from 'vue';
+import $ from "jquery";
 import PageHeader from '@/controls/PageHeader.vue';
 import SearchForm from '@/components/SearchForm.vue';
 import EntryForm from '@/components/EntryForm.vue';
 import { getLabelModel } from "@/assets/labelutil.js";
-import { startApplication } from "@/assets/apputil.js";
+import { startApplication, DEFAULT_CONTENT_TYPE, getDefaultLanguage, getApiUrl } from "@/assets/apputil.js";
 
 export default {
   components: {
     PageHeader, SearchForm, EntryForm
   },
   setup() {
+    const dataChunk = {};
     const dataCategory = {
-      marrystatus: [{key: "S", text: "Single"}, {key: "M", text: "Married"},{key: "D", text: "Divorce"},{key: "W", text: "Widow"}],
-      licenses: [{key: "CAR", text: "Car"},{key: "TRUCK", text: "Truck"},{key: "BOAT", text: "Boat"}],
-      languages: [{key: "TH", text: "Thai"},{key: "EN", text: "English"},{key: "CN", text: "Chinese"},{key: "KR", text: "Korea"},{key: "JP", text: "Japan"}]
+      marrystatus: [{id: "S", text: "Single"}, {id: "M", text: "Married"},{id: "D", text: "Divorce"},{id: "W", text: "Widow"}],
+      licenses: [{id: "CAR", text: "Car"},{id: "TRUCK", text: "Truck"},{id: "BOAT", text: "Boat"}],
+      languages: [{id: "TH", text: "Thai"},{id: "EN", text: "English"},{id: "CN", text: "Chinese"},{id: "KR", text: "Korea"},{id: "JP", text: "Japan"}]
     };
     let labels = ref(getLabelModel());
-    return { labels, dataCategory };
+    return { labels, dataCategory, dataChunk };
   },
   mounted() {
     console.log("App: mounted ...");
     this.$nextTick(function () {
       //ensure ui completed then invoke startApplication 
       startApplication("demo002");
+      this.loadDataCategories();
     });
   },
   methods: {
     changeLanguage(lang) {
       let labelModel = getLabelModel(lang);
       this.labels = labelModel;
+      this.resetDataCategories(lang);
+    },
+    loadDataCategories() {
+      let jsondata = {tablename: ["kt_marrystatus", "kt_languages"], orderfield: "seqno"};
+      $.ajax({
+        url: getApiUrl()+"/api/datatable/list",
+        data: jsondata,
+        type: "POST",
+        dataType: "json",
+        contentType: DEFAULT_CONTENT_TYPE,
+        error : function(transport,status,errorThrown) {
+          console.error("loadDataCategories: error: status",status,"errorThrown",errorThrown);
+        },
+        success: (data) => {
+          console.log("loadDataCategories: success",data);
+          if(data.body) {
+            for(let item of data.body) {
+              if(item.tablename && item.resultset && item.resultset.rows) {
+                this.dataChunk[item.tablename] = item.resultset.rows;
+              }
+            }
+            console.log("data chunk",this.dataChunk);
+            this.resetDataCategories();
+          }
+        }
+      });	
+    },
+    resetDataCategories(lang) {
+      if(!lang) lang = getDefaultLanguage();
+      if(!lang || lang.trim().length==0) lang = "EN";
+      let marrystatus;
+      let languages;
+      let kt_marrystatus = this.dataChunk["kt_marrystatus"];
+      if(kt_marrystatus) {
+        marrystatus = kt_marrystatus.map((item) => { return { id: item.statusid, text: "EN"==lang?item.nameen:item.nameth } });
+      }
+      let kt_languages = this.dataChunk["kt_languages"];
+      if(kt_languages) {
+        languages = kt_languages.map((item) => { return { id: item.langid, text: "EN"==lang?item.nameen:item.nameth } });
+      }
+      if(marrystatus) this.dataCategory.marrystatus = marrystatus;
+      if(languages) this.dataCategory.languages = languages;
     },
     dataSelected(item,action) {
       //listen action from search form
