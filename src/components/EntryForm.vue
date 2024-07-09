@@ -120,10 +120,10 @@ import { ref, computed, watch } from 'vue';
 import { useVuelidate } from '@vuelidate/core';
 import { required, helpers, between } from '@vuelidate/validators';
 import $ from "jquery";
-import { DEFAULT_CONTENT_TYPE, getApiUrl }  from '@/assets/appinfo.js';
-import { startWaiting, stopWaiting, submitFailure, detectErrorResponse }  from '@/assets/apputil.js';
-import { confirmUpdate, confirmSave, confirmDelete, successbox } from '@/assets/apputil.js';
-import { replaceString } from "@/assets/msgutil.js";
+import { DEFAULT_CONTENT_TYPE, getApiUrl }  from '@/assets/js/appinfo.js';
+import { startWaiting, stopWaiting, submitFailure, detectErrorResponse }  from '@/assets/js/apputil.js';
+import { confirmUpdate, confirmSave, confirmDelete, successbox, serializeParameters } from '@/assets/js/apputil.js';
+import { replaceString } from "@/assets/js/msgutil.js";
 import InputDate from '@/controls/InputDate.vue';
 import InputTime from '@/controls/InputTime.vue';
 import InputNumber from '@/controls/InputNumber.vue';
@@ -283,11 +283,13 @@ export default {
     },
     saveRecord(dataRecord) {
         let jsondata = {ajax: true};
-        Object.assign(jsondata,dataRecord);
+        //Object.assign(jsondata,dataRecord);
+        let formdata = serializeParameters(jsondata,dataRecord);
         startWaiting();
         $.ajax({
           url: getApiUrl()+"/api/demo002/insert",
-          data: jsondata,
+          data: formdata.jsondata,
+          headers : formdata.headers,
           type: "POST",
           dataType: "json",
           contentType: DEFAULT_CONTENT_TYPE,
@@ -310,11 +312,13 @@ export default {
     },
     updateRecord(dataRecord) {
         let jsondata = {ajax: true};
-        Object.assign(jsondata,dataRecord);
+        //Object.assign(jsondata,dataRecord);
+        let formdata = serializeParameters(jsondata,dataRecord);
         startWaiting();
         $.ajax({
           url: getApiUrl()+"/api/demo002/update",
-          data: jsondata,
+          data: formdata.jsondata,
+          headers : formdata.headers,
           type: "POST",
           dataType: "json",
           contentType: DEFAULT_CONTENT_TYPE,
@@ -335,11 +339,13 @@ export default {
     },
     retrieveRecord(dataKeys) {
       let jsondata = {ajax: true};
-      Object.assign(jsondata,dataKeys);
+      //Object.assign(jsondata,dataKeys);
+      let formdata = serializeParameters(jsondata,dataKeys);
       startWaiting();
       $.ajax({
         url: getApiUrl()+"/api/demo002/retrieve",
-        data: jsondata,
+        data: formdata.jsondata,
+        headers : formdata.headers,
         type: "POST",
         dataType: "json",
         contentType: DEFAULT_CONTENT_TYPE,
@@ -361,11 +367,13 @@ export default {
     },
     deleteRecord(dataKeys) {
       let jsondata = {ajax: true};
-      Object.assign(jsondata,dataKeys);
+      //Object.assign(jsondata,dataKeys);
+      let formdata = serializeParameters(jsondata,dataKeys);
       startWaiting();
       $.ajax({
         url: getApiUrl()+"/api/demo002/remove",
-        data: jsondata,
+        data: formdata.jsondata,
+        headers : formdata.headers,
         type: "POST",
         dataType: "json",
         contentType: DEFAULT_CONTENT_TYPE,

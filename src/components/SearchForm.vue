@@ -28,9 +28,9 @@
 <script>
 import { ref } from 'vue';
 import $ from "jquery";
-import { DEFAULT_CONTENT_TYPE, getApiUrl }  from '@/assets/appinfo.js';
-import { startWaiting, stopWaiting, submitFailure }  from '@/assets/apputil.js'
-import { Paging } from "@/assets/Paging.js";
+import { DEFAULT_CONTENT_TYPE, getApiUrl }  from '@/assets/js/appinfo.js';
+import { startWaiting, stopWaiting, submitFailure, serializeParameters }  from '@/assets/js/apputil.js'
+import { Paging } from "@/assets/js/Paging.js";
 import InputDate from '@/controls/InputDate.vue';
 import InputMask from '@/controls/InputMask.vue';
 import DataTable from '@/controls/DataTable.vue';
@@ -112,11 +112,13 @@ export default {
     collecting(options,criterias) {
       console.log("collecting: options",options,", criteria",criterias);
       let jsondata = Object.assign({ajax: true},options);
-      Object.assign(jsondata,criterias);
+      //Object.assign(jsondata,criterias);
+      let formdata = serializeParameters(jsondata,criterias);
       startWaiting();
       $.ajax({
         url: getApiUrl()+"/api/demo002/collect",
-        data: jsondata,
+        data: formdata.jsondata,
+        headers : formdata.headers,
         type: "POST",
         dataType: "json",
         contentType: DEFAULT_CONTENT_TYPE,

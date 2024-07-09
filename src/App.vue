@@ -2,11 +2,7 @@
 <template>
   <div id="fswaitlayer" class="fa fa-spinner fa-spin"></div>
   <div class="pt-page pt-page-current pt-page-controller search-pager">
-    <PageHeader ref="pageHeader" :labels="labels" pid="demo002" version="1.0.0">
-      <li><a href="javascript:void(0)" @click="changeLanguage('EN')" class="pagemenu-linker"><img class="img-lang img-lang-EN" />&nbsp;{{ labels.english_lang }}</a></li>
-      <li><a href="javascript:void(0)" @click="changeLanguage('TH')" class="pagemenu-linker"><img class="img-lang img-lang-TH" />&nbsp;{{ labels.thai_lang }}</a></li>
-      <hr class="menu-separator"/>
-    </PageHeader>
+    <PageHeader ref="pageHeader" :labels="labels" pid="demo002" version="1.0.0" showLanguage="true" @language-changed="changeLanguage" />
     <SearchForm ref="searchForm" :labels="labels" :dataCategory="dataCategory" @data-select="dataSelected" @data-insert="dataInsert"/>
   </div>
   <teleport to="#modaldialog">
@@ -19,9 +15,10 @@ import $ from "jquery";
 import PageHeader from '@/controls/PageHeader.vue';
 import SearchForm from '@/components/SearchForm.vue';
 import EntryForm from '@/components/EntryForm.vue';
-import { getLabelModel } from "@/assets/labelutil.js";
-import { DEFAULT_CONTENT_TYPE, getDefaultLanguage, getApiUrl } from "@/assets/appinfo.js";
-import { startApplication } from "@/assets/apputil.js";
+import { getLabelModel } from "@/assets/js/labelutil.js";
+import { DEFAULT_CONTENT_TYPE, getDefaultLanguage, getApiUrl } from "@/assets/js/appinfo.js";
+import { startApplication, serializeParameters } from "@/assets/js/apputil.js";
+import { requestAccessorInfo } from "@/assets/js/messenger.js";
 
 export default {
   components: {
@@ -35,27 +32,39 @@ export default {
       languages: [{id: "TH", text: "Thai"},{id: "EN", text: "English"},{id: "CN", text: "Chinese"},{id: "KR", text: "Korea"},{id: "JP", text: "Japan"}]
     };
     let labels = ref(getLabelModel());
-    return { labels, dataCategory, dataChunk };
+    let alreadyLoading = ref(false);
+    return { labels, dataCategory, dataChunk, alreadyLoading };
   },
   mounted() {
     console.log("App: mounted ...");
-    this.$nextTick(function () {
+    this.$nextTick(() => {
       //ensure ui completed then invoke startApplication 
       startApplication("demo002");
-      this.loadDataCategories();
+      let reply = requestAccessorInfo((data) => {
+        this.messagingHandler(data);
+        this.loadDataCategories(!this.alreadyLoading);
+      });
+      console.log("request access info: ",reply);
     });
   },
   methods: {
+    messagingHandler(data) {
+      console.log("messagingHandler: data",data);      
+    },
     changeLanguage(lang) {
       let labelModel = getLabelModel(lang);
       this.labels = labelModel;
       this.resetDataCategories(lang);
     },
-    loadDataCategories() {
+    loadDataCategories(loading) {
+      console.log("loadDataCategories: loading",loading);
+      if(!loading) return;
       let jsondata = {tablename: ["kt_marrystatus", "kt_languages"], orderfield: "seqno"};
+      let formdata = serializeParameters(jsondata);
       $.ajax({
         url: getApiUrl()+"/api/datatable/list",
-        data: jsondata,
+        data: formdata.jsondata,
+        headers : formdata.headers,
         type: "POST",
         dataType: "json",
         contentType: DEFAULT_CONTENT_TYPE,
@@ -63,6 +72,7 @@ export default {
           console.error("loadDataCategories: error: status",status,"errorThrown",errorThrown);
         },
         success: (data) => {
+          this.alreadyLoading = true;
           console.log("loadDataCategories: success",data);
           if(data.body) {
             for(let item of data.body) {
