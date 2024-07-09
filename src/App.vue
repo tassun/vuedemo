@@ -20,7 +20,8 @@ import PageHeader from '@/controls/PageHeader.vue';
 import SearchForm from '@/components/SearchForm.vue';
 import EntryForm from '@/components/EntryForm.vue';
 import { getLabelModel } from "@/assets/labelutil.js";
-import { startApplication, DEFAULT_CONTENT_TYPE, getDefaultLanguage, getApiUrl } from "@/assets/apputil.js";
+import { DEFAULT_CONTENT_TYPE, getDefaultLanguage, getApiUrl } from "@/assets/appinfo.js";
+import { startApplication } from "@/assets/apputil.js";
 
 export default {
   components: {

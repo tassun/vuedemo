@@ -120,7 +120,7 @@ import { ref, computed, watch } from 'vue';
 import { useVuelidate } from '@vuelidate/core';
 import { required, helpers, between } from '@vuelidate/validators';
 import $ from "jquery";
-import { DEFAULT_CONTENT_TYPE, getApiUrl }  from '@/assets/apputil.js';
+import { DEFAULT_CONTENT_TYPE, getApiUrl }  from '@/assets/appinfo.js';
 import { startWaiting, stopWaiting, submitFailure, detectErrorResponse }  from '@/assets/apputil.js';
 import { confirmUpdate, confirmSave, confirmDelete, successbox } from '@/assets/apputil.js';
 import { replaceString } from "@/assets/msgutil.js";

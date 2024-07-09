@@ -28,7 +28,7 @@
 <script>
 import { ref } from 'vue';
 import $ from "jquery";
-import { DEFAULT_CONTENT_TYPE, getApiUrl }  from '@/assets/apputil.js';
+import { DEFAULT_CONTENT_TYPE, getApiUrl }  from '@/assets/appinfo.js';
 import { startWaiting, stopWaiting, submitFailure }  from '@/assets/apputil.js'
 import { Paging } from "@/assets/Paging.js";
 import InputDate from '@/controls/InputDate.vue';
