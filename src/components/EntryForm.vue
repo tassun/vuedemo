@@ -243,7 +243,8 @@ export default {
       if(this.v$.$errors && this.v$.$errors.length > 0) {
         let input = this.v$.$errors[0].$property;
         let el = this.$refs[input];
-        if(el) el.focus();
+        if(el) el.focus(); //if using ref
+        else $("#"+input).trigger("focus"); //if using id
       }
     },
     showDialog() {
