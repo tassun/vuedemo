@@ -125,7 +125,7 @@ label:active + textarea {
  font-weight: normal; 
  color: #FFFFFF;
 }
-
+button.btn-dark:hover {  box-shadow: 2px 2px 2px gray; }
 .btn-primary {
 	color: #FFFFFF;
 	border: 1px solid #028575;
@@ -369,6 +369,7 @@ a:hover { text-decoration: none; }
 .btn-cover-layer { margin-right: 10px; }
 #fswaitlayer { display:none; position:absolute; left:1px; top:1px; z-Index:9999; font-size: 50px; color: #1E90FF; }
 .btn-ctrl { margin-top: 10px; margin-right: 10px; min-width: 100px; }
+.btn-ctrl-cover { padding-right: 30px; padding-bottom: 15px; }
 .btn-span { padding-left: 5px; }
 .img-lang { width: 30px; height: 15px; }
 .img-lang-EN { content: url(../img/lang/EN.png); }

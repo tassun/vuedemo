@@ -8,31 +8,42 @@
         <div class="row row-height">
           <div class="col-height col-md-4">
             <label for="account">{{ labels.account_label }}</label>
-            <InputMask ref="account" v-model="localData.account" id="account" name="account" picture="XXXXXXXXXXXX" :disabled="disabledKeyField"/> 
+            <div class="input-group has-validation" :class="{'has-error': v$.account.$error}">
+              <InputMask ref="account" v-model="localData.account" id="account" name="account" picture="XXXXXXXXXXXX" :disabled="disabledKeyField"/> 
+              <label class="required">*</label>
+            </div>
             <span v-if="v$.account.$error" class="has-error">{{ v$.account.$errors[0].$message }}</span>
           </div>
         </div>
         <div class="row row-height">
           <div class="col-height col-md-4">
             <label for="amount">{{ labels.amount_label }}</label>
-            <InputMoney ref="amount" v-model="localData.amount" id="amount" name="amount" decimal="2" /> 
+            <div class="input-group" :class="{'has-error': v$.amount.$error}">
+              <InputMoney ref="amount" v-model="localData.amount" id="amount" name="amount" decimal="2" /> 
+            </div>
             <span v-if="v$.amount.$error" class="has-error">{{ v$.amount.$errors[0].$message }}</span>
           </div>
           <div class="col-height col-md-3">
             <label for="pincode">{{ labels.pincode_label }}</label>
-            <InputMask ref="pincode" v-model="localData.pincode" id="pincode" name="pincode" picture="XXXXXXXX" /> 
+            <div class="input-group" :class="{'has-error': v$.pincode.$error}">
+              <InputMask ref="pincode" v-model="localData.pincode" id="pincode" name="pincode" picture="XXXXXXXX" /> 
+            </div>
             <span v-if="v$.pincode.$error" class="has-error">{{ v$.pincode.$errors[0].$message }}</span>
           </div>
         </div>
         <div class="row row-height">
           <div class="col-height col-md-4">
             <label for="effectdate">{{ labels.effectdate_label }}</label>
-            <InputDate ref="effectdate" v-model="localData.effectdate" id="effectdate" name="effectdate" /> 
+            <div class="input-group" :class="{'has-error': v$.effectdate.$error}">
+              <InputDate ref="effectdate" v-model="localData.effectdate" id="effectdate" name="effectdate" /> 
+            </div>
             <span v-if="v$.effectdate.$error" class="has-error">{{ v$.effectdate.$errors[0].$message }}</span>
           </div>
           <div class="col-height col-md-3">
             <label for="edittime">{{labels.effecttime_label}}</label>
-            <InputTime ref="effecttime" v-model="localData.effecttime" id="effecttime" name="effecttime" /> 
+            <div class="input-group" :class="{'has-error': v$.effecttime.$error}">
+              <InputTime ref="effecttime" v-model="localData.effecttime" id="effecttime" name="effecttime" /> 
+            </div>
             <span v-if="v$.effecttime.$error" class="has-error">{{ v$.effecttime.$errors[0].$message }}</span>
           </div>
         </div>
@@ -41,7 +52,9 @@
             <label for="age">{{ labels.age_label }}</label>
           </div>
           <div class="col-height col-md-2">
-            <InputNumber ref="age" v-model="localData.age" id="age" name="age" /> 
+            <div class="input-group" :class="{'has-error': v$.age.$error}">
+              <InputNumber ref="age" v-model="localData.age" id="age" name="age" /> 
+            </div>
             <span v-if="v$.age.$error" class="has-error">{{ v$.age.$errors[0].$message }}</span>
           </div>
           <div class="col-height col-md-5">
@@ -74,11 +87,11 @@
           <div class="col-height col-md-1">
             <label>{{ labels.licenses_label }}</label>
           </div>    
-        <template v-for="item in dataCategory.licenses" :key="item.key">
+        <template v-for="item in dataCategory.licenses" :key="item.id">
           <div class="col-height col-md-2">
             <div class="form-check">
-              <input ref="licenses" type="checkbox" :id="item.key" :value="item.key" v-model="localData.licenses" class="form-control input-md form-check-input"/>
-              <label :for="item.key" class="form-check-label">{{item.text}}</label>
+              <input ref="licenses" type="checkbox" :id="item.id" :value="item.id" v-model="localData.licenses" class="form-control input-md form-check-input"/>
+              <label :for="item.id" class="form-check-label">{{item.text}}</label>
             </div>
           </div>
         </template>
@@ -87,17 +100,21 @@
         <div class="row row-height">
           <div class="col-height col-md-3">
             <label>{{ labels.marrystatus_label }}</label>
-            <select ref="marrystatus" v-model="localData.marrystatus" class="form-control input-md">
-              <option value=""></option>          
-              <option v-for="item in dataCategory.marrystatus" :key="item.key" :value="item.key">{{item.text}}</option>
-            </select>
+            <div class="input-group" :class="{'has-error': v$.marrystatus.$error}">
+              <select ref="marrystatus" v-model="localData.marrystatus" class="form-control input-md">
+                <option value=""></option>          
+                <option v-for="item in dataCategory.marrystatus" :key="item.id" :value="item.id">{{item.text}}</option>
+              </select>
+            </div>
             <span v-if="v$.marrystatus.$error" class="has-error">{{ v$.marrystatus.$errors[0].$message }}</span>
           </div>
           <div class="col-height col-md-3">
             <label>{{ labels.languages_label }}</label>
-            <select ref="languages" v-model="localData.languages" class="form-control input-md" multiple>
-              <option v-for="item in dataCategory.languages" :key="item.key" :value="item.key">{{item.text}}</option>
-            </select>
+            <div class="input-group" :class="{'has-error': v$.languages.$error}">
+              <select ref="languages" v-model="localData.languages" class="form-control input-md" multiple>
+                <option v-for="item in dataCategory.languages" :key="item.id" :value="item.id">{{item.text}}</option>
+              </select>
+            </div>
             <span v-if="v$.languages.$error" class="has-error">{{ v$.languages.$errors[0].$message }}</span>
           </div>
         </div>
