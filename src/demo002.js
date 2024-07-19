@@ -15,7 +15,8 @@ import "./assets/css/user_style.css";
 import "./assets/js/appinfo.js";
 import { createApp, version } from 'vue';
 import AppDemo002 from './AppDemo002.vue';
-console.log("Vue version",version);
+console.info("Vue version",version);
+console.info("AppDemo002 loading ...");
 createApp(AppDemo002).mount('#app');
 
 //cannot use Demo002 : Component name "Demo002" should always be multi-word 
