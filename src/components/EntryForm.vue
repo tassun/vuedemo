@@ -32,6 +32,12 @@
           </div>
         </div>
         <div class="row row-height">
+          <div class="col-height col-md-7">
+            <label for="title">{{ labels.title_label }}</label>
+            <input ref="title" type="text" v-model="localData.title" id="title" class="form-control input-md" maxlength="100" />
+          </div>
+        </div>
+        <div class="row row-height">
           <div class="col-height col-md-4">
             <label for="effectdate">{{ labels.effectdate_label }}</label>
             <div class="input-group" :class="{'has-error': v$.effectdate.$error}">
@@ -152,6 +158,7 @@ const defaultData = {
   account: '',
   amount: 0.00,
   pincode: "",
+  title: "",
   effectdate: "",
   effecttime: "",
   age: 0,

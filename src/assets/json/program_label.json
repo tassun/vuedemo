@@ -32,6 +32,7 @@
 			{"name": "gender_head", "value": "เพศ"},
 			{"name": "effectdate_head", "value": "วันที่มีผล"},
 			{"name": "effecttime_head", "value": "เวลาที่มีผล"},
+			{"name": "title_head", "value": "ชื่อ"},
 			{"name": "age_alert", "value": "อายุต้องอยู่ระหว่าง %s และ %s ปี"}
 		]
 	},
@@ -68,6 +69,7 @@
 			{"name": "gender_head", "value": "Gender"},
 			{"name": "effectdate_head", "value": "Effect Date"},
 			{"name": "effecttime_head", "value": "Effect Time"},
+			{"name": "title_head", "value": "Title"},
 			{"name": "age_alert", "value": "Age must be between %s and %s years"}
 		]
 	}

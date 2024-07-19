@@ -1,17 +1,21 @@
 <template>
 <div id="searchpanel" class="panel-body search-panel">
     <div class="row row-height">
-        <div class="col-height col-md-3">
+        <div class="col-height col-md-2">
             <label for="account">{{ labels.account_label }}</label>
             <InputMask v-model="localData.account" picture="XXXXXXXXXXXX" /> 
         </div>
-        <div class="col-height col-md-3">
+        <div class="col-height col-md-2">
             <label for="effectdate">{{ labels.effectdate_label }}</label>
             <InputDate v-model="localData.effectdate" /> 
         </div>
-        <div class="col-height col-md-3">
+        <div class="col-height col-md-2">
             <label>{{ labels.marrystatus_label }}</label>
             <Select2 v-model="localData.marrystatus" :options="dataCategory.marrystatus" :settings="{multiple: true}" />
+        </div>
+        <div class="col-height col-md-2">
+            <label>{{ labels.title_label }}</label>
+            <input type="text" v-model="localData.title" class="form-control input-md" maxlength="50" />
         </div>
         <div class="col-height col-md">
             <br/>
@@ -41,6 +45,7 @@ const defaultData = {
   account: '',
   effectdate: "",
   marrystatus: "",
+  title: "",
 };
 
 const tableSettings = {
@@ -51,7 +56,8 @@ const tableSettings = {
         {name: "age", type: "INTEGER", sorter: "age", label: "age_head", css: "text-center" },
         {name: "gender", type: "STRING", sorter: false, label: "gender_head", css: "text-center", unescape: true },
         {name: "effectdate", type: "DATE", sorter: "effectdate", label: "effectdate_head", css: "text-center" },
-        {name: "effecttime", type: "TIME", sorter: "effecttime", label: "effecttime_head", css: "text-center" }
+        {name: "effecttime", type: "TIME", sorter: "effecttime", label: "effecttime_head", css: "text-center" },
+        {name: "title", type: "STRING", sorter: "title", label: "title_head", css: "text-left" }
     ],        
     actions: [
         {type: "button", action: "edit"},
