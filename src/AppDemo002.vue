@@ -18,7 +18,6 @@ import EntryForm from '@/components/EntryForm.vue';
 import { getLabelModel } from "@/assets/js/labelutil.js";
 import { DEFAULT_CONTENT_TYPE, getDefaultLanguage, getApiUrl } from "@/assets/js/appinfo.js";
 import { startApplication, serializeParameters } from "@/assets/js/apputil.js";
-import { requestAccessorInfo } from "@/assets/js/messenger.js";
 
 export default {
   components: {
@@ -39,14 +38,12 @@ export default {
     console.log("App: mounted ...");
     this.$nextTick(() => {
       //ensure ui completed then invoke startApplication 
-      startApplication("demo002");
-      let reply = requestAccessorInfo((data) => {
+      startApplication("demo002",(data) => {
         this.messagingHandler(data);
         this.loadDataCategories(!this.alreadyLoading,() => {
           this.$refs.pageHeader.changeLanguage(getDefaultLanguage());
         });
       });
-      console.log("request access info: ",reply);
       //try to find out parameters from url
       const searchParams = new URLSearchParams(window.location.href);
       console.log("param: authtoken=",searchParams.get("authtoken"),", language=",searchParams.get("language"));
