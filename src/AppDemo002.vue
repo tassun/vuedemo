@@ -42,21 +42,26 @@ export default {
       startApplication("demo002");
       let reply = requestAccessorInfo((data) => {
         this.messagingHandler(data);
-        this.loadDataCategories(!this.alreadyLoading);
+        this.loadDataCategories(!this.alreadyLoading,() => {
+          this.$refs.pageHeader.changeLanguage(getDefaultLanguage());
+        });
       });
       console.log("request access info: ",reply);
+      //try to find out parameters from url
+      const searchParams = new URLSearchParams(window.location.href);
+      console.log("param: authtoken=",searchParams.get("authtoken"),", language=",searchParams.get("language"));
     });
   },
   methods: {
     messagingHandler(data) {
-      console.log("messagingHandler: data",data);      
+      console.log("messagingHandler: data",data); 
     },
     changeLanguage(lang) {
       let labelModel = getLabelModel(lang);
       this.labels = labelModel;
       this.resetDataCategories(lang);
     },
-    loadDataCategories(loading) {
+    loadDataCategories(loading,callback) {
       console.log("loadDataCategories: loading",loading);
       if(!loading) return;
       let jsondata = {tablename: ["kt_marrystatus", "kt_languages"], orderfield: "seqno"};
@@ -82,6 +87,7 @@ export default {
             }
             console.log("data chunk",this.dataChunk);
             this.resetDataCategories();
+            if(callback) callback();
           }
         }
       });	
