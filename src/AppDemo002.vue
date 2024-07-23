@@ -1,8 +1,7 @@
 <!-- App.vue -->
 <template>
   <div id="fswaitlayer" class="fa fa-spinner fa-spin"></div>
-  <LoadingPage ref="loadingPage" :visible="loadingVisible" />
-  <div class="pt-page pt-page-current pt-page-controller search-pager" v-show="loadingVisible == false">
+  <div class="pt-page pt-page-current pt-page-controller search-pager">
     <PageHeader ref="pageHeader" :labels="labels" pid="demo002" version="1.0.0" showLanguage="true" @language-changed="changeLanguage" />
     <SearchForm ref="searchForm" :labels="labels" :dataCategory="dataCategory" @data-select="dataSelected" @data-insert="dataInsert"/>
   </div>
@@ -13,7 +12,6 @@
 <script>
 import { ref } from 'vue';
 import $ from "jquery";
-import LoadingPage from './controls/LoadingPage.vue';
 import PageHeader from '@/controls/PageHeader.vue';
 import SearchForm from '@/components/SearchForm.vue';
 import EntryForm from '@/components/EntryForm.vue';
@@ -23,7 +21,7 @@ import { startApplication, serializeParameters } from "@/assets/js/apputil.js";
 
 export default {
   components: {
-    LoadingPage, PageHeader, SearchForm, EntryForm
+    PageHeader, SearchForm, EntryForm
   },
   setup() {
     const dataChunk = {};
@@ -34,15 +32,13 @@ export default {
     };
     let labels = ref(getLabelModel());
     let alreadyLoading = ref(false);
-    let loadingVisible = ref(true);
-    return { labels, dataCategory, dataChunk, alreadyLoading, loadingVisible };
+    return { labels, dataCategory, dataChunk, alreadyLoading };
   },
   mounted() {
     console.log("App: mounted ...");
     this.$nextTick(() => {
       //ensure ui completed then invoke startApplication 
       startApplication("demo002",(data) => {
-        this.loadingVisible = false;
         this.messagingHandler(data);
         this.loadDataCategories(!this.alreadyLoading,() => {
           this.$refs.pageHeader.changeLanguage(getDefaultLanguage());
