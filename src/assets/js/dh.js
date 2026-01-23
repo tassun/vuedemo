@@ -1,19 +1,31 @@
 import $ from "jquery";
 import { getApiUrl } from "./app.info";
+import { getRequestID, randomize } from "./app.util";
 import { getAccessorInfo } from "./messenger";
 import CryptoJS from "crypto-js";
 import BigInteger from "bigi";
 
 const getPrimes = function (min, max) {
-	const result = Array(max + 1).fill(0).map((_, i) => i);
-	for (let i = 2; i <= Math.sqrt(max + 1); i++) {
-		for (let j = i ** 2; j < max + 1; j += i) delete result[j];
-	}
-	return Object.values(result.slice(min));
+    const isPrime = new Array(max + 1).fill(true);
+    isPrime[0] = isPrime[1] = false;
+    for (let i = 2; i <= Math.sqrt(max); i++) {
+        if (isPrime[i]) {
+            for (let j = i * i; j <= max; j += i) {
+                isPrime[j] = false;
+            }
+        }
+    }
+    const result = [];
+    for (let i = Math.max(min, 2); i <= max; i++) {
+        if (isPrime[i]) {
+            result.push(i);
+        }
+    }
+    return result;
 };
 	
 const getRandomNum = function(min, max) {
-	return Math.floor(Math.random() * (max - min + 1) + min);
+	return Math.floor(randomize() * (max - min + 1) + min);
 };
 	
 const getRandomPrime =function (min, max) {
@@ -95,20 +107,25 @@ DH.prototype.getAccessorInfo = function() {
 
 DH.prototype.getAccessorToken = function() {
 	let json = this.getAccessorInfo();
-	if(json && json.authtoken) {
+	if(json?.authtoken) {
 		return json.authtoken;
 	}
 	return "";
 };
 	
+DH.prototype.getRequestID = function() {
+	return getRequestID();
+};
+
 DH.prototype.requestPublicKey = function(dh,callback,aurl) {
 	if(!aurl) aurl = getApiUrl()+"/api/crypto/dh";
 	let authtoken = this.getAccessorToken();
+	let requestid = this.getRequestID();
 	$.ajax({
 		url: aurl,
 		type: "POST",
 		dataType: "json",
-		headers : { "authtoken": authtoken },
+		headers : { "authtoken": authtoken, "x-request-id": requestid },
 		contentType: "application/x-www-form-urlencoded; charset=UTF-8",
 		error : function(transport,status,errorThrown) {
 			console.log(errorThrown);
@@ -132,6 +149,7 @@ DH.prototype.requestPublicKey = function(dh,callback,aurl) {
 DH.prototype.submitPublicKey = function(callback,aurl) {
 	if(!aurl) aurl = getApiUrl()+"/api/crypto/dh";
 	let authtoken = this.getAccessorToken();
+	let requestid = this.getRequestID();
 	$.ajax({
 		url: aurl,
 		type: "POST",
@@ -139,7 +157,7 @@ DH.prototype.submitPublicKey = function(callback,aurl) {
 			publickey: this.publicKey
 		},
 		dataType: "json",
-		headers : { "authtoken": authtoken },
+		headers : { "authtoken": authtoken, "x-request-id": requestid },
 		contentType: "application/x-www-form-urlencoded; charset=UTF-8",
 		error : function(transport,status,errorThrown) {
 			console.log(errorThrown);
@@ -155,6 +173,7 @@ DH.prototype.submitPublicKey = function(callback,aurl) {
 DH.prototype.updatePublicKey = function(callback,aurl) {
 	if(!aurl) aurl = getApiUrl()+"/api/crypto/update";
 	let authtoken = this.getAccessorToken();
+	let requestid = this.getRequestID();
 	$.ajax({
 		url: aurl,
 		type: "POST",
@@ -162,7 +181,7 @@ DH.prototype.updatePublicKey = function(callback,aurl) {
 			publickey: this.publicKey
 		},
 		dataType: "json",
-		headers : { "authtoken": authtoken },
+		headers : { "authtoken": authtoken, "x-request-id": requestid },
 		contentType: "application/x-www-form-urlencoded; charset=UTF-8",
 		error : function(transport,status,errorThrown) {
 			console.log(errorThrown);

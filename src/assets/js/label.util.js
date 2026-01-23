@@ -1,4 +1,7 @@
-import { getDefaultLanguage, getDefaultLabels, getProgramLabels } from "./app.info";
+import $ from "jquery";
+import { getDefaultLanguage, getDefaultLabels, getProgramLabels, getApiUrl, DEFAULT_CONTENT_TYPE, getMetaInfo } from "./app.info";
+import { getAccessorToken, getStorage, setStorage } from "./messenger";
+import { loadAndMergeMessageCode } from "./msg.util";
 
 export function getLabel(name, defaultLabel, lang = getDefaultLanguage()) {
     let result = undefined;
@@ -15,21 +18,23 @@ export function getLabel(name, defaultLabel, lang = getDefaultLanguage()) {
             result = label_item.value;
         }
     }
-    return result?result:defaultLabel;
+    return result ?? defaultLabel;
 }
 
 export function getLabelItem(name, lang, label_category) {
     if(!lang || lang.trim().length==0) lang = "EN";
     let lang_item = label_category.find((item) => { return item.language == lang; });
+    if(!lang_item) lang_item = label_category.find((item) => { return item.language == "EN"; });
     if(lang_item) {
         return lang_item.label.find((item) => { return item.name == name; });
     }
     return undefined;
 }
 
-export function getLabelObject(lang = getDefaultLanguage(), label_category) {
-    if(!lang || lang.trim().length==0) lang = "EN";
-    let lang_item = label_category.find((item) => { return item.language == lang; });
+export function getLabelObject(lang, label_category) {
+    const language = lang && lang.trim().length > 0 ? lang : getDefaultLanguage() || "EN";
+    let lang_item = label_category.find((item) => { return item.language == language; });
+    if(!lang_item) lang_item = label_category.find((item) => { return item.language == "EN"; });
     if(lang_item) {
         return lang_item.label;
     }
@@ -44,10 +49,71 @@ export function getLabelModel(lang = getDefaultLanguage()) {
     let default_model = {};
     let program_model = {};
     if(default_item) {
-        default_item.forEach(element => { default_model[element.name] = element.value; });
+        default_item.forEach((element) => { default_model[element.name] = element.value; });
     }
     if(program_item) {
-        program_item.forEach(element => { program_model[element.name] = element.value; });
+        program_item.forEach((element) => { program_model[element.name] = element.value; });
     }
     return Object.assign(default_model, program_model);
+}
+
+export function getApiLabel() {
+    return getApiUrl() + (getMetaInfo().API_LABEL || "/api/label/fetch");
+}
+
+export function mergeProgramLabels(data_labels) {
+    if(!data_labels) return false;
+    if(!Array.isArray(data_labels) || data_labels.length <= 0) return false;
+    let program_labels = getProgramLabels();
+    for(let data of data_labels) {
+        let lang = data.language;
+        let lang_item = program_labels.find((item) => { return item.language == lang; });
+        if(lang_item) {
+            let concat_labels = [...lang_item.label, ...data.label];
+            lang_item.label = [...new Map(concat_labels.map(item => [item.name, item])).values()];
+        }
+    }
+    return true;
+}
+
+export function loadAndMergeLabel(id, callback, loadLabel = String(getMetaInfo()?.LOAD_LABEL)=="true", url = getApiLabel()) {
+    loadAndMergeProgramLabel(id,callback,loadLabel,url);
+    loadAndMergeMessageCode();
+}
+
+export function loadAndMergeProgramLabel(id, callback, loadLabel = String(getMetaInfo()?.LOAD_LABEL)=="true", url = getApiLabel()) {
+    if(!loadLabel) return;
+    let label_cached = getStorage(id);
+    if(label_cached) {
+        let merged = mergeProgramLabels(label_cached);
+        if(merged && callback) callback(true,label_cached);
+        return;
+    }
+    fetchLabel(id,function(success,data) {
+        if(success) {
+            setStorage(id,data.body);
+            let merged = mergeProgramLabels(data.body);
+            if(merged && callback) callback(true,data.body);
+        }
+    },url);
+}
+
+export function fetchLabel(id, callback, url = getApiLabel()) {
+    console.log("fetchLabel:",id);
+	let authtoken = getAccessorToken();
+	$.ajax({
+		url: url,
+		type: "POST",
+		data: JSON.stringify({ labelid: id }),
+		dataType: "json",
+		headers : { "authtoken": authtoken },
+		contentType: DEFAULT_CONTENT_TYPE,
+		error : function(transport,status,errorThrown) {
+			console.error(errorThrown);
+			if(callback) callback(false,errorThrown,transport);
+		},
+		success: function(data) {
+			if(callback) callback(true,data);
+		}
+	});		
 }

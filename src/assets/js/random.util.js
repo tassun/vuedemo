@@ -1,8 +1,10 @@
-const ALPHABETS = Array.from("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789");
-const NUMERICS = Array.from("0123456789");
+import { randomize } from "./app.util";
+
+export const ALPHABETS = Array.from("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789");
+export const NUMERICS = Array.from("0123456789");
 
 export function getRandomNumber(min = 1, max = 1000000) {
-	return Math.floor(Math.random() * (max - min + 1) + min);
+	return Math.floor(randomize() * (max - min + 1) + min);
 }
 
 export function random(len = 6, alphabets = ALPHABETS ) {

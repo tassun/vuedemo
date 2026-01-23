@@ -41,7 +41,10 @@
           <div class="col-height col-md-4">
             <label for="effectdate">{{ labels.effectdate_label }}</label>
             <div class="input-group" :class="{'has-error': v$.effectdate.$error}">
+              <div class="date-control">
               <InputDate ref="effectdate" v-model="localData.effectdate" id="effectdate" name="effectdate" /> 
+              <label class="required">*</label>
+              </div>
             </div>
             <span v-if="v$.effectdate.$error" class="has-error">{{ v$.effectdate.$errors[0].$message }}</span>
           </div>
@@ -49,6 +52,7 @@
             <label for="edittime">{{labels.effecttime_label}}</label>
             <div class="input-group" :class="{'has-error': v$.effecttime.$error}">
               <InputTime ref="effecttime" v-model="localData.effecttime" id="effecttime" name="effecttime" /> 
+              <label class="required">*</label>
             </div>
             <span v-if="v$.effecttime.$error" class="has-error">{{ v$.effecttime.$errors[0].$message }}</span>
           </div>
@@ -132,8 +136,8 @@
         </div>
     </template>
     <template v-slot:footer>
-      <button class="btn btn-dark btn-sm" @click="saveClick" v-if="insertMode"><em class="fa fa-save fa-btn-icon"></em>{{ labels.save_button }}</button>
-      <button class="btn btn-dark btn-sm" @click="updateClick" v-if="updateMode"><em class="fa fa-save fa-btn-icon"></em>{{ labels.update_button }}</button>
+      <button id="savebutton" class="btn btn-dark btn-sm" @click="saveClick" v-if="insertMode"><em class="fa fa-save fa-btn-icon"></em>{{ labels.save_button }}</button>
+      <button id="updatebutton" class="btn btn-dark btn-sm" @click="updateClick" v-if="updateMode"><em class="fa fa-save fa-btn-icon"></em>{{ labels.update_button }}</button>
       <button class="btn btn-dark btn-sm" data-dismiss="modal"><em class="fa fa-close fa-btn-icon"></em>{{ labels.cancel_button }}</button>
     </template>
   </DialogForm>
@@ -144,7 +148,7 @@ import { useVuelidate } from '@vuelidate/core';
 import { required, helpers, between } from '@vuelidate/validators';
 import $ from "jquery";
 import { DEFAULT_CONTENT_TYPE, getApiUrl }  from '@/assets/js/app.info.js';
-import { startWaiting, stopWaiting, submitFailure, detectErrorResponse }  from '@/assets/js/app.util.js';
+import { startWaiting, stopWaiting, submitFailure, detectErrorResponse, disableControls }  from '@/assets/js/app.util.js';
 import { confirmUpdate, confirmSave, confirmDelete, successbox, serializeParameters } from '@/assets/js/app.util.js';
 import { replaceString } from "@/assets/js/msg.util.js";
 import InputDate from '@/controls/InputDate.vue';
@@ -241,12 +245,14 @@ export default {
     },
     async saveClick() {
       console.log("click: save");
+      disableControls($("#savebutton"));
       let valid = await this.validateForm();
       if(!valid) return;
       this.startSaveRecord();
     },
     async updateClick() {
       console.log("click: update");
+      disableControls($("#updatebutton"));
       let valid = await this.validateForm();
       if(!valid) return;
       this.startUpdateRecord();

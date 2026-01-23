@@ -14,7 +14,7 @@ export function clearCalendar(src) {
 	if(dpkr.is(":disabled")) return;
 	if(dpkr.is("[readonly]")) {
 		let edit = dpkr.attr("editable");
-		if(!("true"==edit)) return;		
+		if ("true" != edit) return;
 	}
 	dpkr.val("");
 	src.dispatchEvent(new Event('select')); 
@@ -26,7 +26,7 @@ export function openCalendar(src) {
 	if(dpkr.is(":disabled")) return;
 	if(dpkr.is("[readonly]")) {
 		let edit = dpkr.attr("editable");
-		if(!("true"==edit)) return;		
+		if ("true" != edit)	return;
 	}
 	try{ 
 		dpkr.datepicker({
@@ -43,38 +43,48 @@ export function openCalendar(src) {
 			}
 		});
 		dpkr.datepicker("show");
+		$(document).off('focusin');
 		return;
 	}catch (ex)	{ console.error(ex); }
 }
 function triggerInput(input) { 
 	input.dispatchEvent(new Event('input', { bubbles: true })); 
 }
-export function inputNumberOnly(myfield,e,decimal,isPlus) { 
-	let key; let keychar;  
-	if (e) key = e.which; else return true; 
-	keychar = String.fromCharCode(key); 
-	let element = myfield; 
-	isPlus = ( isPlus != null )? true : false ; 
-	let isPoint= ( decimal != null && decimal != 0 )? true : false ; 
-	if ( key==45 && element.value.indexOf('-')==-1 && !isPlus  ) { 
-		element.value="-"+element.value;
-		triggerInput(element); 
-	} 
-	if ( (key==46) && (element.value.indexOf('.')==-1) && isPoint ) { 
-		if (element.value == "") element.value='0';
-		triggerInput(element); 
-		return true; 
-	} 
-	if ((key==null) || (key==0) || (key==8) || (key==9) || (key==27)) return true; 
-	else if ("0123456789".indexOf(keychar) > -1) {
-		triggerInput(element); 
-		return true; 
-	} else return false; 
-} 
+export function inputNumberOnly(myfield, e, decimal, isPlus) {
+    let key;
+    if (e)
+        key = e.which;
+    else
+        return true;
+    let keychar = String.fromCodePoint(key);
+    let element = myfield;
+    isPlus = Boolean(isPlus);
+    let isPoint = decimal !== null && decimal !== undefined && Number(decimal) !== 0;
+    if (key == 45 && !element.value.includes('-') && !isPlus) {
+        element.value = "-" + element.value;
+        triggerInput(element);
+    }
+    if ((key == 46) && !element.value.includes('.') && isPoint) {
+        if (element.value == "")
+            element.value = '0';
+        triggerInput(element);
+        return true;
+    }
+    if ((key == null) || (key == 0) || (key == 8) || (key == 9) || (key == 27))
+        return true;
+    else if ("0123456789".includes(keychar)) {
+        triggerInput(element);
+        return true;
+    }
+    else
+        return false;
+}
 export function checkInputNumberOnly(myfield,e,decimal,isPlus) { 
 	let iskeyup = myfield.getAttribute('keyup'); 
-	if ( iskeyup==false){  return false; }  
-	myfield.setAttribute('keyup',false);  
+    if (iskeyup === "false") {
+        return false;
+    }
+    myfield.setAttribute('keyup', "false");
 	return inputNumberOnly(myfield,e,decimal,isPlus);  
 } 
 export function checkInputKey(myfield,event,decimal,maxvalue) { 
@@ -89,58 +99,67 @@ export function checkInputKey(myfield,event,decimal,maxvalue) {
 		triggerInput(myfield);
 	} 
 } 
+function cleansingValues(valueBfChange, fraction, point, data) {
+    data = clearComma(data);
+    try {
+        let dot = '';
+        let x = data.split('.');
+        if (x.length == 2 && point > 0) {
+            dot = (x[1].length > point) ? ('.' + x[1].substring(0, point)) : ('.' + x[1]);
+        }
+        while (x[0].length > 1 && x[0].charAt(0) == "0") {
+            x[0] = x[0].substring(1);
+        }
+        if ((fraction == 0 && Number(x[0]) > 0) || (fraction > 0 && x[0].length > fraction)) {
+            return [valueBfChange, true];
+        }
+        data = x[0] + dot;
+    }
+    catch (ex) {
+        console.error(ex);
+    }
+    return [data, false];
+}
 export function formatNumber(element,maxvalue,decimal) { 
-	let valueBfChange = element.value;
-	let data = element.value; 
-	let point = 0 ; 
-	if ( decimal != null && decimal !=  ""  ) { 
-		let precisions = Number(decimal);
-		point = ( precisions >= 0 ) ? precisions : 2;
-	} 
-	let fraction = null ; 
-	if ( maxvalue != null && maxvalue != "" ) { 
-		if ( Number(maxvalue) >= 0 ) { 
-			fraction = maxvalue ; 
-			if ( data.indexOf("-")>-1 )  fraction++; 	
-		} else {
-			fraction = null  ; 
-		}
-	} 
-	data = clearComma(data); 
-	try { 
-		let dot = '' ; 
-		let x = data.split('.'); 
-		if ( x.length == 2 && point > 0 ) { 
-			dot = ( x[1].length > point )?('.'+x[1].substring(0,point)):('.'+x[1]) ; 
-		} 
-		while ( x[0].length > 1 && x[0].charAt(0)=="0" ) { 
-			x[0] = x[0].substring(1);	
-		} 
-		if ( (fraction == 0 && Number(x[0]) > 0 ) || ( fraction > 0 && x[0].length > fraction ) ) { 
-			element.value = valueBfChange ; 
-			return true;	
-		} 
-		data = x[0] + dot; 
-	}catch (ex) { console.error(ex); } 
-	element.value = putComma(data); 
+    let valueBfChange = element.value;
+    let data = element.value;
+    let point = 0;
+    if (decimal) {
+        let precisions = Number(decimal);
+        point = (precisions >= 0) ? precisions : 2;
+    }
+    let fraction = null;
+    let mxvalue = maxvalue ? Number(maxvalue) : -1;
+    if (mxvalue >= 0) {
+        fraction = mxvalue;
+        if (data.includes("-"))
+            fraction++;
+    }
+    let unchanged = false;
+    [data, unchanged] = cleansingValues(valueBfChange, fraction, point, data);
+    element.value = unchanged ? data : putComma(data);
 } 
-function putComma(data) { 
-	if ( data.indexOf(',') > -1 ) { data = clearComma(data); } 
-	let move = ( data.indexOf('.') > -1 ) ? data.indexOf('.') : data.length; 
-	let minus = ( data.indexOf('-') > -1 ) ? 1 : 0 ; 
-	while ( move > 3 ) { 
-		if ( minus && move <= 4  )  { break ; } 
-		data = data.substring(0,move-3)+","+data.substring(move-3) ; 
-		move -= 3 ; 
-	} 
-	return data; 
-} 
-export function clearComma(data){ 
-	while (data.indexOf(',')!=-1) { 
-		data = data.replace(',',''); 
-	} 
-	return data; 
-} 
+export function putComma(data) {
+    if (data.includes(',')) {
+        data = clearComma(data);
+    }
+    let move = (data.includes('.')) ? data.indexOf('.') : data.length;
+    let minus = (data.includes('-')) ? 1 : 0;
+    while (move > 3) {
+        if (minus && move <= 4) {
+            break;
+        }
+        data = data.substring(0, move - 3) + "," + data.substring(move - 3);
+        move -= 3;
+    }
+    return data;
+}
+export function clearComma(data) {
+    while (data.includes(',')) {
+        data = data.replaceAll(',', '');
+    }
+    return data;
+}
 export function getCaretPosition (ctrl) {
 	let iCaretPos = 0;
 	if (document.selection) { 
@@ -166,15 +185,19 @@ export function setCaretPosition(ctrl, iCaretPos) {
 		ctrl.focus ();
 	}
 }
-export function parseNumber(avalue) { 
+export function parseNumber(avalue) {
+	if(!avalue) return 0;
 	return Number(removeComma(avalue)); 
 } 		  
-function removeComma(avalue) { 
-	let result = avalue ; 
-	while ( result.indexOf(",") > -1 ) { 
-		result = removeDelimiter(result,",");	} 
-	return result; 
-} 		 				 
+function removeComma(avalue) {
+    if (!avalue)
+        return avalue;
+    let result = avalue + "";
+    while (result.includes(",")) {
+        result = removeDelimiter(result, ",");
+    }
+    return result;
+}
 function removeDelimiter(avalue,delimiter) { 
 	return avalue.replace(delimiter,""); 
 } 
@@ -183,70 +206,84 @@ export function formatFloating(avalue,decimal) {
 	avalue = removeComma(avalue); 
 	return formatDecimal(avalue,decimal,true); 
 } 		 							 
-export function formatDecimal(avalue,decimal,verifydecimal) { 
-	let sign = ""; 
-	let result = avalue+"";			 
-	let bstr = ""; 
-	let cstr = ""; 
-	let i = result.indexOf("-"); 
-	if(i>=0) { 
-		sign = "-"; 
-		result = result.substring(i+1); 
-	} else { 
-		i = result.indexOf("+"); 
-		if(i>=0) { 
-			sign = "+"; 
-			result = result.substring(i+1);					 
-		} 
-	} 
-	let astr = result; 
-	i = result.indexOf("."); 
-	if(i>0) { 
-		astr = result.substring(0,i); 
-		bstr = result.substring(i+1); 
-		cstr = result.substring(i); 
-	}  
-	let la = astr.length; 
-	if(la>3) { 
-		let tstr = astr; 
-		astr = ""; 
-		while(tstr!="") { 
-			la = tstr.length; 
-			let md = la % 3; 
-			if(md>0) { 
-				astr += tstr.substring(0,md)+","; 
-				tstr = tstr.substring(md); 
-			} else { 
-				astr += tstr.substring(0,3); 
-				tstr = tstr.substring(3); 
-				if(tstr!="") astr += ","; 
-			} 
-		} 
-	} 
-	if(verifydecimal) { 
-		if(decimal>0) { 
-			let l = bstr.length; 
-			if(decimal>l) { 
-				let j = 0; 
-				for(j=l;j<decimal;j++) { 
-					bstr += "0"; 
-				} 
-			} else { 
-				bstr = bstr.substring(0,decimal); 
-			}		 
-			if(astr=="") return ""; 
-			return sign+astr+"."+bstr; 
-		} else { 
-			return sign+astr; 
-		} 
-	} else { 
-		return sign+astr+cstr; 
-	} 
-}						 
+function resolveDecimalSign(avalue) {
+    let sign = "";
+    let result = avalue + "";
+    let i = result.indexOf("-");
+    if (i >= 0) {
+        sign = "-";
+        result = result.substring(i + 1);
+    }
+    else {
+        i = result.indexOf("+");
+        if (i >= 0) {
+            sign = "+";
+            result = result.substring(i + 1);
+        }
+    }
+    return [result, sign];
+}
+function resolveDecimalString(avalue) {
+    let cstr = "";
+    let bstr = "";
+    let astr = avalue;
+    let i = avalue.indexOf(".");
+    if (i > 0) {
+        astr = avalue.substring(0, i);
+        bstr = avalue.substring(i + 1);
+        cstr = avalue.substring(i);
+    }
+    let la = astr.length;
+    if (la > 3) {
+        let tstr = astr;
+        astr = "";
+        while (tstr != "") {
+            la = tstr.length;
+            let md = la % 3;
+            if (md > 0) {
+                astr += tstr.substring(0, md) + ",";
+                tstr = tstr.substring(md);
+            }
+            else {
+                astr += tstr.substring(0, 3);
+                tstr = tstr.substring(3);
+                if (tstr != "")
+                    astr += ",";
+            }
+        }
+    }
+    return [astr, bstr, cstr];
+}
+export function formatDecimal(avalue, decimal, verifydecimal) {
+    let [result, sign] = resolveDecimalSign(avalue);
+    let [astr, bstr, cstr] = resolveDecimalString(result);
+    if (!verifydecimal) {
+        return sign + astr + cstr;
+    }
+    if (decimal <= 0) {
+        return sign + astr;
+    }
+    if (astr == "")
+        return "";
+    let l = bstr.length;
+    if (decimal > l) {
+        let j = 0;
+        for (j = l; j < decimal; j++) {
+            bstr += "0";
+        }
+    }
+    else {
+        bstr = bstr.substring(0, decimal);
+    }
+    return sign + astr + "." + bstr;
+}
 
 const header_action = { type: "button", action: "edit" };
 export function ensureTableSetting(settings) {
-    let headers = {autoFormat: true, ...settings};
+    let headers = { autoFormat: true, defaultAction: "edit", 
+		tableCSS:"data-table table table-bordered table-hover table-striped tablesorter", bodyCSS: "data-table-body", rowCSS: "", 
+		headCSS: "data-table-header", headRowCSS: "", headColCSS: "text-center th-data", headSeqCSS: "text-center th-sequence", headActionCSS: "text-center th-action",
+		...settings };
     if(headers.actions) {
         for(let act of headers.actions) {
             let item = {...header_action, ...act};
@@ -268,7 +305,7 @@ export function formatDataTable(data,field) {
 	try {
 		if(field) {
 			if(field.type=="DECIMAL") { 
-				return formatFloating(data,field.decimal!==undefined?field.decimal:2); 
+				return formatFloating(data, field.decimal === undefined ? 2 : field.decimal);
 			}
 			else if(field.type=="DATE") {                       
 				let date = Utilities.parseDate(data);
